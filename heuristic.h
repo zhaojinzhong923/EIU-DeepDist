@@ -175,7 +175,7 @@ void DeepDist::init(vector<int> &init_solution)
 
 int DeepDist::pick_var()
 {
-    int i, v;
+    int i, v, c;
     int best_var;
     int sel_c;
     lit *p;
