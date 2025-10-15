@@ -18,10 +18,17 @@ void DeepDist::init(vector<int> &init_solution)
             {
                 if ((0 == local_soln_feasible || 0 == best_soln_feasible))
                 {
-                    if (org_clause_weight[c] == top_clause_weight)
+                    if (org_clause_weight[c] == top_clause_weight){
                         clause_weight[c] = 1;
-                    else
-                        clause_weight[c] = 0;
+                    }else{
+                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
+                            clause_weight[c] = tuned_org_clause_weight[c] * int(tries / 2) ;
+                        }else{
+                            clause_weight[c] = 0;
+                        }
+                    }
+                    // else
+                    //     clause_weight[c] = 0;
                 }
                 else
                 {
@@ -53,10 +60,18 @@ void DeepDist::init(vector<int> &init_solution)
             {      
                 if ((0 == local_soln_feasible || 0 == best_soln_feasible))
                 {
-                    if (org_clause_weight[c] == top_clause_weight)
+                    if (org_clause_weight[c] == top_clause_weight){
                         clause_weight[c] = 1;
-                    else
-                        clause_weight[c] = 0;
+                    }else{
+                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
+                            clause_weight[c] = 1/num_sclauses ;
+                        }else{
+                            clause_weight[c] = 0;
+                        }
+                    }
+                    // else
+                    //     clause_weight[c] = 0;
+
                 }
                 else
                 {
