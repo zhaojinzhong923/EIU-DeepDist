@@ -394,6 +394,9 @@ void DeepDist::build_instance(char *filename)
     {
         for (int i = 0; i < clause_lit_count[c]; ++i)
         {
+            if (org_clause_weight[c] == top_clause_weight)
+                always_unsat_sc_count[c] = 0;
+
             v = clause_lit[c][i].var_num;
             var_lit[v][var_lit_count[v]] = clause_lit[c][i];
             ++var_lit_count[v];
@@ -460,6 +463,8 @@ void DeepDist::allocate_memory()
     temp_lit = new int[malloc_var_length];
 
     soft_clause_num_index = new int[malloc_clause_length];
+
+    always_unsat_sc_count = new int[malloc_clause_length];
 }
 
 void DeepDist::free_memory()
@@ -519,6 +524,8 @@ void DeepDist::free_memory()
     delete[] temp_lit;
 
     delete[] soft_clause_num_index;
+
+    delete[] always_unsat_sc_count;
 }
 
 #endif

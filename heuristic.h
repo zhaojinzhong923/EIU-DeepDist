@@ -111,6 +111,11 @@ void DeepDist::init(vector<int> &init_solution)
     /* figure out sat_count, sat_var and init unsat_stack */
     for (int c = 0; c < num_clauses; ++c)
     {
+
+        if(org_clause_weight[c] == top_clause_weight){
+            always_unsat_sc_count[c]++;
+        }
+        
         sat_count[c] = 0;
         for (int j = 0; j < clause_lit_count[c]; ++j)
         {
@@ -336,6 +341,14 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             flip(flipvar);
             time_stamp[flipvar] = step;
             total_step++;
+        }
+        for (int c = 0; c < num_clauses; ++c) 
+        {
+            if(org_clause_weight[c] == top_clause_weight){
+                if ((sat_count[c] > 0)){
+                    always_unsat_sc_count[c] = 0;
+                }
+            }
         }
     }
 }
