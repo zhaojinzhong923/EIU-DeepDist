@@ -24,7 +24,7 @@ void DeepDist::init(vector<int> &init_solution)
                     //     clause_weight[c] = 0;
                     else{
                         if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
-                            clause_weight[c] = tuned_org_clause_weight[c] * int(tries / 2) ;
+                            clause_weight[c] = tuned_org_clause_weight[c] * tries ;
                         }else{
                             clause_weight[c] = 0;
                         }
@@ -175,7 +175,7 @@ void DeepDist::init(vector<int> &init_solution)
 
 int DeepDist::pick_var()
 {
-    int i, v, c;
+    int i, v, c, s_num=15;
     int best_var;
     int sel_c;
     lit *p;
@@ -247,8 +247,8 @@ int DeepDist::pick_var()
     if (hardunsat_stack_fill_pointer > 0)
     {
         sel_c = hardunsat_stack[rand() % hardunsat_stack_fill_pointer];
-        if((hardunsat_stack_fill_pointer > 10) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.2) ){
-            for (i = 0; i < 10; ++i)
+        if((hardunsat_stack_fill_pointer > s_num) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.4) ){
+            for (i = 0; i < s_num; ++i)
             {
                 c = hardunsat_stack[rand() % hardunsat_stack_fill_pointer];
                 if (always_unsat_sc_count[c] > always_unsat_sc_count[sel_c])
@@ -265,8 +265,8 @@ int DeepDist::pick_var()
             sel_c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
             // if (clause_lit_count[sel_c] != 0)
             //     break;
-            if((softunsat_stack_fill_pointer > 10) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.2) && (problem_weighted==1) ){
-                for (i = 0; i < 10; ++i)
+            if((softunsat_stack_fill_pointer > s_num) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.4) && (problem_weighted==1) ){
+                for (i = 0; i < s_num; ++i)
                 {
                     c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
                     if (org_clause_weight[c] > org_clause_weight[sel_c])

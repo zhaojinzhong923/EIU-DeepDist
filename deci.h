@@ -444,7 +444,7 @@ void Decimation::sunit_propagation()
 
 void Decimation::random_propagation()
 {
-    if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.2 && unassigned_var_count > 15){
+    if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.4 && unassigned_var_count > 15){
         int sel_v, v1, sense;
         sel_v = unassigned_var[rand() % unassigned_var_count];
         for(int i = 0; i < 15; ++i){
