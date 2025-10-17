@@ -239,13 +239,23 @@ int DeepDist::pick_var()
             sel_c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
             // if (clause_lit_count[sel_c] != 0)
             //     break;
-            if((softunsat_stack_fill_pointer > s_num) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.2) && (problem_weighted==1) ){
-                for (i = 0; i < s_num; ++i)
-                {
-                    c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
-                    if (org_clause_weight[c] > org_clause_weight[sel_c])
-                        sel_c = c;
+            if((softunsat_stack_fill_pointer > s_num) && ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.2) &&  ){
+                if(problem_weighted==1){
+                    for (i = 0; i < s_num; ++i)
+                    {
+                        c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
+                        if (org_clause_weight[c] > org_clause_weight[sel_c])
+                            sel_c = c;
+                    }
+                }else{
+                    for (i = 0; i < s_num; ++i)
+                    {
+                        c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
+                        if (clause_weight[c] > clause_weight[sel_c])
+                            sel_c = c;
+                    }
                 }
+                
                 // if (clause_lit_count[sel_c] != 0)
                 //     break;
             }
@@ -347,6 +357,10 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             if(org_clause_weight[c] == top_clause_weight){
                 if ((sat_count[c] > 0)){
                     always_unsat_sc_count[c] = 0;
+                }
+            }else{
+                if ((sat_count[c] > 0)&& best_soln_feasible == 1){
+                    always_unsat_sc_count[c] ++;
                 }
             }
         }
