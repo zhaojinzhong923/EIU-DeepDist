@@ -394,7 +394,7 @@ void DeepDist::build_instance(char *filename)
     {
         for (int i = 0; i < clause_lit_count[c]; ++i)
         {
-            if (org_clause_weight[c] == top_clause_weight)
+            // if (org_clause_weight[c] == top_clause_weight)
                 always_unsat_sc_count[c] = 0;
 
             v = clause_lit[c][i].var_num;
