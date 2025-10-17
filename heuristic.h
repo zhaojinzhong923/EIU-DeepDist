@@ -321,6 +321,8 @@ void DeepDist::hard_increase_weights(){
         c = hardunsat_stack[i];
         
         clause_weight[c] += h_inc;
+        //WPMS: h_inc = 28;
+        //PMS: h_inc = 1;
 
         if (clause_weight[c] == (h_inc + 1))
             large_weight_clauses[large_weight_clauses_count++] = c;
@@ -518,6 +520,9 @@ void DeepDist::update_clause_weights()
             if (0 == hard_unsat_nb)
             {
                 soft_increase_weights();   
+            }else if ( best_soln_feasible != 0)
+            { 
+                soft_decrease_weights();                
             }
         }
         else
