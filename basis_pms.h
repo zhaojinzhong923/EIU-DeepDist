@@ -176,6 +176,7 @@ class DeepDist
 
 	void hard_increase_weights();
 	void soft_increase_weights();
+	void soft_decrease_weights();
 	void smooth_weights();
 	void hard_smooth_weights();
 	void soft_smooth_weights();
