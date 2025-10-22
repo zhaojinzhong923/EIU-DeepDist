@@ -21,8 +21,9 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight){
                         clause_weight[c] = 1;
                     }else{
-                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
-                            clause_weight[c] = tuned_org_clause_weight[c] * int(tries / 2) ;
+                        // if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
+                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && infeasible_count > 5){
+                            clause_weight[c] = tuned_org_clause_weight[c] * int(infeasible_count / 2) ;
                         }else{
                             clause_weight[c] = 0;
                         }
@@ -63,8 +64,8 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight){
                         clause_weight[c] = 1;
                     }else{
-                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && tries > 5){
-                            clause_weight[c] = 1/num_sclauses ;
+                        if(best_soln_feasible == 1 && local_soln_feasible == 0 && infeasible_count > 5){
+                            clause_weight[c] = 1/num_sclauses* int(infeasible_count / 2) ;
                         }else{
                             clause_weight[c] = 0;
                         }
@@ -321,6 +322,12 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             //     else if (opt_unsat_weight == 0)
             //         return;
             // }
+            if(local_soln_feasible == 1){
+                infeasible_count = 0;
+            }else{
+                infeasible_count++;
+            }
+            cout<<"infeasible_count: "<<infeasible_count<<endl;
             int flipvar = pick_var();
             flip(flipvar);
             time_stamp[flipvar] = step;

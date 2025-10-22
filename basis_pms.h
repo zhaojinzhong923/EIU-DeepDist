@@ -66,6 +66,8 @@ class DeepDist
 	int prioup_time;
 	double opt_time;
 
+	int infeasible_count;
+
 	/**********end non-algorithmic information*****************/
 	/* literal arrays */
 	lit **var_lit;		   //var_lit[i][j] means the j'th literal of var i.
