@@ -603,6 +603,7 @@ void DeepDist::update_clause_weights()
                 if (soft_unsat_weight >= opt_unsat_weight)
                 { 
                     soft_increase_weights();
+                    hard_decrease_weights();
                 }else{
                     soft_increase_weights2();
                 }
@@ -617,7 +618,8 @@ void DeepDist::update_clause_weights()
         {
             if (soft_unsat_weight >= opt_unsat_weight && best_soln_feasible != 0)
             { 
-                soft_increase_weights();                
+                soft_increase_weights();
+                hard_decrease_weights();                
             }
             else if( hard_unsat_nb == 0 )
             {
@@ -736,7 +738,9 @@ void DeepDist::hard_decrease_weights(){
         // clause_weight[c] += h_inc;
         //WPMS: h_inc = 28;
         //PMS: h_inc = 1;
-        double h_inc =  0.99 * clause_weight[c] - clause_weight[c];
+        double h_inc2 =  0.99 * clause_weight[c] - clause_weight[c];
+        clause_weight[c] = clause_weight[c] + h_inc2;
+        
 
         
 
@@ -745,7 +749,7 @@ void DeepDist::hard_decrease_weights(){
 
         for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
         {
-            score[v] += h_inc;
+            score[v] += h_inc2;
             if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
             {
                 already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
