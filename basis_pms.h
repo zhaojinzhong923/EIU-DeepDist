@@ -97,6 +97,7 @@ class DeepDist
 	double avg_soft_weight;
 	double max_soft_clause_weight;
 	double soft_increase_ratio;		//delta
+	int *hard_clause_num_index;
 
 	// long long *clause_selected_count;
 	int *best_soft_clause;

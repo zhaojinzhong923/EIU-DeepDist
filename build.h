@@ -314,7 +314,8 @@ void DeepDist::build_instance(char *filename)
         }
         else
         {
-            num_hclauses++;
+            // num_hclauses++;
+            hard_clause_num_index[num_hclauses++] = c;
         }
 
         iss >> cur_lit;
@@ -460,6 +461,7 @@ void DeepDist::allocate_memory()
     temp_lit = new int[malloc_var_length];
 
     soft_clause_num_index = new int[malloc_clause_length];
+    hard_clause_num_index = new int[malloc_clause_length];
 }
 
 void DeepDist::free_memory()
@@ -519,6 +521,7 @@ void DeepDist::free_memory()
     delete[] temp_lit;
 
     delete[] soft_clause_num_index;
+    delete[] hard_clause_num_index;
 }
 
 #endif

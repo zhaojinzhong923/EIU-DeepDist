@@ -603,16 +603,16 @@ void DeepDist::update_clause_weights()
                 if (soft_unsat_weight >= opt_unsat_weight)
                 { 
                     soft_increase_weights();
-                    hard_decrease_weights();
+                    // hard_decrease_weights();
                 }else{
-                    soft_increase_weights2();
+                    if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
+                        hard_decrease_weights();
+                    }else{
+                        soft_increase_weights2();
+                    }
+                    // soft_increase_weights2();
                 }
             }
-            // else if ( local_soln_feasible == 1)
-            // { 
-            //     // soft_decrease_weights(); 
-            //     // soft_increase_weights2();               
-            // }
         }
         else
         {
@@ -623,14 +623,13 @@ void DeepDist::update_clause_weights()
             }
             else if( hard_unsat_nb == 0 )
             {
-                soft_increase_weights2();
+                if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
+                    hard_decrease_weights();
+                }else{
+                    soft_increase_weights2();
+                }
+                // soft_increase_weights2();
             }
-            // else if ( local_soln_feasible == 1)
-            // { 
-            //     // soft_decrease_weights(); 
-            //     soft_increase_weights2();
-            //     // hard_decrease_weights();               
-            // }  
         }  
     }
     else
@@ -729,31 +728,134 @@ void DeepDist::soft_increase_weights2(){
 }
 
 
+// void DeepDist::hard_decrease_weights(){
+//     int i, c, v;
+//     if (1 == problem_weighted)
+//     {
+//         for (i = 0; i < hardunsat_stack_fill_pointer; ++i)
+//         {
+//             c = hardunsat_stack[i];
+            
+//             // clause_weight[c] += h_inc;
+//             //WPMS: h_inc = 28;
+//             //PMS: h_inc = 1;
+//             double h_inc2 =  0.999 * clause_weight[c] - clause_weight[c];
+//             clause_weight[c] = clause_weight[c] + h_inc2;
+            
+
+            
+
+//             // if (clause_weight[c] == (h_inc + 1))
+//             //     large_weight_clauses[large_weight_clauses_count++] = c;
+
+//             for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+//             {
+//                 score[v] += h_inc2;
+//                 if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+//                 {
+//                     already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+//                     mypush(v, goodvar_stack);
+//                 }
+//             }
+//         }
+//     }else{
+//         for (i = 0; i < hardunsat_stack_fill_pointer; ++i)
+//         {
+//             c = hardunsat_stack[i];
+            
+//             // clause_weight[c] += h_inc;
+//             //WPMS: h_inc = 28;
+//             //PMS: h_inc = 1;
+//             double h_inc2 =  0.999 * clause_weight[c] - clause_weight[c];
+//             clause_weight[c] = clause_weight[c] + h_inc2;
+
+//             for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+//             {
+//                 score[v] += h_inc2;
+//                 if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+//                 {
+//                     already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+//                     mypush(v, goodvar_stack);
+//                 }
+//             }
+//         }
+//     }
+//     return;
+// }
+
 void DeepDist::hard_decrease_weights(){
     int i, c, v;
-    for (i = 0; i < hardunsat_stack_fill_pointer; ++i)
+
+    if (1 == problem_weighted)
     {
-        c = hardunsat_stack[i];
-        
-        // clause_weight[c] += h_inc;
-        //WPMS: h_inc = 28;
-        //PMS: h_inc = 1;
-        double h_inc2 =  0.99 * clause_weight[c] - clause_weight[c];
-        clause_weight[c] = clause_weight[c] + h_inc2;
-        
-
-        
-
-        if (clause_weight[c] == (h_inc + 1))
-            large_weight_clauses[large_weight_clauses_count++] = c;
-
-        for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+        for (i = 0; i < num_hclauses; ++i)
         {
-            score[v] += h_inc2;
-            if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+            c = hard_clause_num_index[i];
+
+            double inc = 0.99 * clause_weight[c] - clause_weight[c];
+
+            clause_weight[c] += inc;
+            if (sat_count[c] <= 0) // unsat
             {
-                already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
-                mypush(v, goodvar_stack);
+                for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+                {
+                    score[v] += inc;
+                    if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+                    {
+                        int index = already_in_goodvar_stack[v];
+                        int last_v = mypop(goodvar_stack);
+                        goodvar_stack[index] = last_v;
+                        already_in_goodvar_stack[last_v] = index;
+                        already_in_goodvar_stack[v] = -1;
+                    }
+                }
+            }
+            else if (sat_count[c] < 2) // sat
+            {
+                v = sat_var[c];
+                score[v] -= inc;
+                if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+                {
+                    already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+                    mypush(v, goodvar_stack);
+                }
+            }
+        }
+    }
+    else
+    {
+        for (i = 0; i < num_hclauses; ++i)
+        {
+            c = hard_clause_num_index[i];
+
+            double inc = 0.99 * clause_weight[c] - clause_weight[c];
+
+            clause_weight[c] += inc;
+
+            if (sat_count[c] <= 0) // unsat
+            {
+                for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+                {
+                    score[v] += inc;
+                    if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+                    {
+                        int index = already_in_goodvar_stack[v];
+                        int last_v = mypop(goodvar_stack);
+                        goodvar_stack[index] = last_v;
+                        already_in_goodvar_stack[last_v] = index;
+                        already_in_goodvar_stack[v] = -1;
+                    }
+                }
+            }
+            else if (sat_count[c] < 2) // sat
+            {
+                v = sat_var[c];
+                score[v] -= inc;
+                if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+                {
+                    already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+                    mypush(v, goodvar_stack);
+                }
             }
         }
     }
