@@ -599,19 +599,20 @@ void DeepDist::update_clause_weights()
         {
             if (0 == hard_unsat_nb)
             {
-                // soft_increase_weights();
+                soft_increase_weights();
                 if (soft_unsat_weight >= opt_unsat_weight)
                 { 
-                    soft_increase_weights();
-                    hard_decrease_weights();
-                }else{
-                    // if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
-                    //     hard_decrease_weights();
-                    // }else{
-                    //     soft_increase_weights2();
-                    // }
                     soft_increase_weights2();
+                    // hard_decrease_weights();
                 }
+                // else{
+                //     // if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
+                //     //     hard_decrease_weights();
+                //     // }else{
+                //     //     soft_increase_weights2();
+                //     // }
+                //     soft_increase_weights2();
+                // }
             }
         }
         else
@@ -619,9 +620,9 @@ void DeepDist::update_clause_weights()
             if (soft_unsat_weight >= opt_unsat_weight && best_soln_feasible != 0)
             { 
                 soft_increase_weights();
-                hard_decrease_weights();                
+                // hard_decrease_weights();                
             }
-            else if( hard_unsat_nb == 0 )
+            else if( hard_unsat_nb != 0 && tries > 10)
             {
                 // if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
                 //     hard_decrease_weights();
@@ -692,7 +693,7 @@ void DeepDist::soft_increase_weights2(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c]) - clause_weight[c];
+            double inc = soft_increase_ratio * (clause_weight[c] + tries) - clause_weight[c];
             // double inc = -1;
 
             clause_weight[c] += inc;
