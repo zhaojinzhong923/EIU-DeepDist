@@ -603,14 +603,14 @@ void DeepDist::update_clause_weights()
                 if (soft_unsat_weight >= opt_unsat_weight)
                 { 
                     soft_increase_weights();
-                    // hard_decrease_weights();
+                    hard_decrease_weights();
                 }else{
-                    if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
-                        hard_decrease_weights();
-                    }else{
-                        soft_increase_weights2();
-                    }
-                    // soft_increase_weights2();
+                    // if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
+                    //     hard_decrease_weights();
+                    // }else{
+                    //     soft_increase_weights2();
+                    // }
+                    soft_increase_weights2();
                 }
             }
         }
@@ -623,12 +623,12 @@ void DeepDist::update_clause_weights()
             }
             else if( hard_unsat_nb == 0 )
             {
-                if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
-                    hard_decrease_weights();
-                }else{
-                    soft_increase_weights2();
-                }
-                // soft_increase_weights2();
+                // if((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < 0.5){
+                //     hard_decrease_weights();
+                // }else{
+                //     soft_increase_weights2();
+                // }
+                soft_increase_weights2();
             }
         }  
     }
