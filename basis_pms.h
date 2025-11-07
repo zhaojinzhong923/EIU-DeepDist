@@ -137,6 +137,9 @@ class DeepDist
 	long long soft_unsat_weight;
 	long long opt_unsat_weight;
 	long long local_opt_unsat_weight;
+	int infeasible_count;
+	int total_infeasible_count;
+	int feasible_count;
 
 	//clause weighting
 	int *large_weight_clauses;

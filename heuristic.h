@@ -311,6 +311,13 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             time_stamp[flipvar] = step;
             total_step++;
         }
+        if(local_soln_feasible == 1){
+            total_infeasible_count += infeasible_count;
+            feasible_count++;
+            infeasible_count = 0;
+        }else{
+            infeasible_count++;
+        }
     }
 }
 
