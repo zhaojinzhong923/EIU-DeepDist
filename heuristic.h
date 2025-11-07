@@ -356,6 +356,11 @@ void DeepDist::soft_increase_weights(){
 
             double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
 
+            if(inc > h_inc){
+                h_inc = inc;
+            }
+
+
             clause_weight[c] += inc;
             if (sat_count[c] <= 0) // unsat
             {
@@ -391,6 +396,11 @@ void DeepDist::soft_increase_weights(){
             c = soft_clause_num_index[i];
 
             double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+
+            if(inc > h_inc){
+                h_inc = inc;
+            }
+
 
             clause_weight[c] += inc;
 
