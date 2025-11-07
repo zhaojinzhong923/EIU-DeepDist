@@ -10,6 +10,7 @@ void DeepDist::init(vector<int> &init_solution)
 
     if (1 == problem_weighted) // weighted partial MaxSAT
     {
+        h_inc = 28;
         for (int c = 0; c < num_clauses; c++)
         {
             already_in_soft_large_weight_stack[c] = 0; 
@@ -45,6 +46,7 @@ void DeepDist::init(vector<int> &init_solution)
     }
     else // unweighted partial MaxSAT
     {
+        h_inc = 1;
         for (int c = 0; c < num_clauses; c++)
         {
             already_in_soft_large_weight_stack[c] = 0;
