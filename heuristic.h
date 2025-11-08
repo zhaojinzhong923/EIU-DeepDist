@@ -519,28 +519,40 @@ void DeepDist::update_clause_weights()
     if (num_hclauses > 0)
     {
         hard_increase_weights();
+        // if(soft_unsat_weight >= opt_unsat_weight){
+        //     hard_increase_weights();
+        // }
 
         if (1 == problem_weighted)
         {
             if (0 == hard_unsat_nb)
             {
-                soft_increase_weights();   
-            }
-            else{
-                if(best_soln_feasible != 0 && infeasible_count > total_infeasible_count / feasible_count){
+                // soft_increase_weights();   
+                if(soft_unsat_weight >= opt_unsat_weight){
+                    soft_increase_weights();
+                    cout<<"increase1111111111111111"<<endl;
+                }else{
                     soft_increase_weights2();
+                    cout<<"increase222222222222222"<<endl;
                 }
             }
+            // else{
+            //     if(best_soln_feasible != 0 && infeasible_count > total_infeasible_count / feasible_count * 2){
+            //         soft_increase_weights2();
+            //     }
+            // }
         }
         else
         {
             if (soft_unsat_weight >= opt_unsat_weight && best_soln_feasible != 0)
             { 
-                soft_increase_weights();                
+                soft_increase_weights();
+                cout<<"increase1111111111111111"<<endl;                
             }
             else{
-                if(best_soln_feasible != 0 && infeasible_count > total_infeasible_count / feasible_count){
+                if(hard_unsat_nb == 0 ){
                     soft_increase_weights2();
+                    cout<<"increase222222222222222"<<endl;
                 }
             }  
         }  
@@ -569,7 +581,7 @@ void DeepDist::soft_increase_weights2(){
             c = soft_clause_num_index[i];
 
             // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
-            double inc = soft_increase_ratio * (clause_weight[c] + infeasible_count) - clause_weight[c];
+            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]/org_clause_weight[c]) - clause_weight[c];
             clause_weight[c] += inc;
             if (sat_count[c] <= 0) // unsat
             {
@@ -604,7 +616,13 @@ void DeepDist::soft_increase_weights2(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + infeasible_count) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + ) - clause_weight[c];
+            double inc;
+            if(sat_count[c] > 0){
+                inc = 0;
+            }else{
+                inc = 1;
+            }
 
             clause_weight[c] += inc;
 
