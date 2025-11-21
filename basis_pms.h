@@ -80,6 +80,8 @@ class DeepDist
 	int *var_neighbor_count;
 	int *neighbor_flag;
 	int *temp_neighbor;
+	double *hscore_ls;  // 局部搜索阶段的硬得分
+	double *sscore_ls;  // 局部搜索阶段的软得分
 
 	/* Information about the clauses */
 	long long top_clause_weight;

@@ -126,19 +126,46 @@ void DeepDist::init(vector<int> &init_solution)
         }
     }
 
-    /*figure out score*/
+    // /*figure out score*/
+    // for (int v = 1; v <= num_vars; v++)
+    // {
+    //     score[v] = 0.0;
+    //     for (int i = 0; i < var_lit_count[v]; ++i)
+    //     {
+    //         int c = var_lit[v][i].clause_num;
+    //         if (sat_count[c] == 0)
+    //             score[v] += clause_weight[c];
+    //         else if (sat_count[c] == 1 && var_lit[v][i].sense == cur_soln[v])
+    //             score[v] -= clause_weight[c];
+    //     }
+    // }
     for (int v = 1; v <= num_vars; v++)
     {
-        score[v] = 0.0;
+        hscore_ls[v] = 0.0;
+        sscore_ls[v] = 0.0;
         for (int i = 0; i < var_lit_count[v]; ++i)
         {
             int c = var_lit[v][i].clause_num;
+            bool is_hard = (org_clause_weight[c] == top_clause_weight);
+
             if (sat_count[c] == 0)
-                score[v] += clause_weight[c];
+            {
+                if (is_hard)
+                    hscore_ls[v] += clause_weight[c];
+                else
+                    sscore_ls[v] += clause_weight[c];
+            }
             else if (sat_count[c] == 1 && var_lit[v][i].sense == cur_soln[v])
-                score[v] -= clause_weight[c];
+            {
+                if (is_hard)
+                    hscore_ls[v] -= clause_weight[c];
+                else
+                    sscore_ls[v] -= clause_weight[c];
+            }
         }
+        score[v] = hscore_ls[v] + sscore_ls[v];
     }
+
 
     // init goodvars stack
     goodvar_stack_fill_pointer = 0;
