@@ -179,7 +179,9 @@ void DeepDist::init(vector<int> &init_solution)
     //     else
     //         already_in_goodvar_stack[v] = -1;
     // }
-
+    goodvar_stack_fill_pointer = 0;
+    good_softvar_stack_fill_pointer = 0;
+    good_hardvar_stack_fill_pointer = 0;
     for (int v = 1; v <= num_vars; v++)
     {
         // 综合得分>0

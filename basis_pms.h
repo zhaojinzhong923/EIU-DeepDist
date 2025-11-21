@@ -199,6 +199,8 @@ class DeepDist
 	void flip(int flipvar);
 	void update_goodvarstack1(int flipvar);
 	void update_goodvarstack2(int flipvar);
+	void update_good_hardvarstack(int flipvar);
+	void update_good_softvarstack(int flipvar);
 	int pick_var();
 	void soft_increase_weights_not_partial();
 
