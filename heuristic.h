@@ -211,7 +211,7 @@ void DeepDist::init(vector<int> &init_solution)
         else
             already_in_good_soft_stack[v] = -1;
     }
-}
+
 }
 
 int DeepDist::pick_var()

@@ -252,107 +252,107 @@ void DeepDist::flip2(int flipvar)
 }
 
 
-// void DeepDist::flip(int flipvar)
-// {
-// 	int i, v, c;
-// 	int index;
-// 	lit *clause_c;
+void DeepDist::flip(int flipvar)
+{
+	int i, v, c;
+	int index;
+	lit *clause_c;
 
-// 	double org_flipvar_score = score[flipvar];
-// 	//cout << "c org_flipvar_score: " <<org_flipvar_score << endl;
-// 	cur_soln[flipvar] = 1 - cur_soln[flipvar];
+	double org_flipvar_score = score[flipvar];
+	//cout << "c org_flipvar_score: " <<org_flipvar_score << endl;
+	cur_soln[flipvar] = 1 - cur_soln[flipvar];
 
-// 	for (i = 0; i < var_lit_count[flipvar]; ++i)
-// 	{
-// 		c = var_lit[flipvar][i].clause_num;
-// 		clause_c = clause_lit[c];
+	for (i = 0; i < var_lit_count[flipvar]; ++i)
+	{
+		c = var_lit[flipvar][i].clause_num;
+		clause_c = clause_lit[c];
 
-// 		if (cur_soln[flipvar] == var_lit[flipvar][i].sense)
-// 		{
-// 			++sat_count[c];
-// 			if (sat_count[c] == 2) //sat_count from 1 to 2
-// 			{
-// 				score[sat_var[c]] += clause_weight[c];
-// 				if (score[sat_var[c]] > 0 && -1 == already_in_goodvar_stack[sat_var[c]])
-// 				{
-// 					already_in_goodvar_stack[sat_var[c]] = goodvar_stack_fill_pointer;
-// 					mypush(sat_var[c], goodvar_stack);
-// 				}
-// 			}
-// 			else if (sat_count[c] == 1) // sat_count from 0 to 1
-// 			{
-// 				sat_var[c] = flipvar; //record the only true lit's var
-// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
-// 				{
-// 					score[v] -= clause_weight[c];
-// 					if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
-// 					{
-// 						int index = already_in_goodvar_stack[v];
-// 						int last_v = mypop(goodvar_stack);
-// 						goodvar_stack[index] = last_v;
-// 						already_in_goodvar_stack[last_v] = index;
-// 						already_in_goodvar_stack[v] = -1;
-// 					}
-// 				}
-// 				sat(c);
-// 			}
-// 		}
-// 		else // cur_soln[flipvar] != cur_lit.sense
-// 		{
-// 			--sat_count[c];
-// 			if (sat_count[c] == 1) //sat_count from 2 to 1
-// 			{
-// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
-// 				{
-// 					if (p->sense == cur_soln[v])
-// 					{
-// 						score[v] -= clause_weight[c];
-// 						if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
-// 						{
-// 							int index = already_in_goodvar_stack[v];
-// 							int last_v = mypop(goodvar_stack);
-// 							goodvar_stack[index] = last_v;
-// 							already_in_goodvar_stack[last_v] = index;
-// 							already_in_goodvar_stack[v] = -1;
-// 						}
-// 						sat_var[c] = v;
-// 						break;
-// 					}
-// 				}
-// 			}
-// 			else if (sat_count[c] == 0) //sat_count from 1 to 0
-// 			{
-// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
-// 				{
-// 					score[v] += clause_weight[c];
-// 					if (score[v] > 0 && -1 == already_in_goodvar_stack[v])
-// 					{
-// 						already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
-// 						mypush(v, goodvar_stack);
-// 					}
-// 				}
-// 				unsat(c);
-// 			} //end else if
-// 		}	 //end else
-// 	}
+		if (cur_soln[flipvar] == var_lit[flipvar][i].sense)
+		{
+			++sat_count[c];
+			if (sat_count[c] == 2) //sat_count from 1 to 2
+			{
+				score[sat_var[c]] += clause_weight[c];
+				if (score[sat_var[c]] > 0 && -1 == already_in_goodvar_stack[sat_var[c]])
+				{
+					already_in_goodvar_stack[sat_var[c]] = goodvar_stack_fill_pointer;
+					mypush(sat_var[c], goodvar_stack);
+				}
+			}
+			else if (sat_count[c] == 1) // sat_count from 0 to 1
+			{
+				sat_var[c] = flipvar; //record the only true lit's var
+				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+				{
+					score[v] -= clause_weight[c];
+					if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+					{
+						int index = already_in_goodvar_stack[v];
+						int last_v = mypop(goodvar_stack);
+						goodvar_stack[index] = last_v;
+						already_in_goodvar_stack[last_v] = index;
+						already_in_goodvar_stack[v] = -1;
+					}
+				}
+				sat(c);
+			}
+		}
+		else // cur_soln[flipvar] != cur_lit.sense
+		{
+			--sat_count[c];
+			if (sat_count[c] == 1) //sat_count from 2 to 1
+			{
+				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+				{
+					if (p->sense == cur_soln[v])
+					{
+						score[v] -= clause_weight[c];
+						if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+						{
+							int index = already_in_goodvar_stack[v];
+							int last_v = mypop(goodvar_stack);
+							goodvar_stack[index] = last_v;
+							already_in_goodvar_stack[last_v] = index;
+							already_in_goodvar_stack[v] = -1;
+						}
+						sat_var[c] = v;
+						break;
+					}
+				}
+			}
+			else if (sat_count[c] == 0) //sat_count from 1 to 0
+			{
+				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+				{
+					score[v] += clause_weight[c];
+					if (score[v] > 0 && -1 == already_in_goodvar_stack[v])
+					{
+						already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+						mypush(v, goodvar_stack);
+					}
+				}
+				unsat(c);
+			} //end else if
+		}	 //end else
+	}
 
-// 	//update information of flipvar
-// 	score[flipvar] = -org_flipvar_score;
-// 	if (score[flipvar] > 0 && already_in_goodvar_stack[flipvar] == -1)
-// 	{
-// 		already_in_goodvar_stack[flipvar] = goodvar_stack_fill_pointer;
-// 		mypush(flipvar, goodvar_stack);
-// 	}
-// 	else if (score[flipvar] <= 0 && already_in_goodvar_stack[flipvar] != -1)
-// 	{
-// 		int index = already_in_goodvar_stack[flipvar];
-// 		int last_v = mypop(goodvar_stack);
-// 		goodvar_stack[index] = last_v;
-// 		already_in_goodvar_stack[last_v] = index;
-// 		already_in_goodvar_stack[flipvar] = -1;
-// 	}
-// 	//update_goodvarstack1(flipvar);
-// }
+	//update information of flipvar
+	score[flipvar] = -org_flipvar_score;
+	if (score[flipvar] > 0 && already_in_goodvar_stack[flipvar] == -1)
+	{
+		already_in_goodvar_stack[flipvar] = goodvar_stack_fill_pointer;
+		mypush(flipvar, goodvar_stack);
+	}
+	else if (score[flipvar] <= 0 && already_in_goodvar_stack[flipvar] != -1)
+	{
+		int index = already_in_goodvar_stack[flipvar];
+		int last_v = mypop(goodvar_stack);
+		goodvar_stack[index] = last_v;
+		already_in_goodvar_stack[last_v] = index;
+		already_in_goodvar_stack[flipvar] = -1;
+	}
+	//update_goodvarstack1(flipvar);
+}
 
 void DeepDist::print_best_solution()
 {

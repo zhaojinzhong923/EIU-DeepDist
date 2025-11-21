@@ -197,6 +197,7 @@ class DeepDist
 	void sat(int clause);
 	void init(vector<int> &init_solution);
 	void flip(int flipvar);
+	void flip2(int flipvar);
 	void update_goodvarstack1(int flipvar);
 	void update_goodvarstack2(int flipvar);
 	void update_good_hardvarstack(int flipvar);
