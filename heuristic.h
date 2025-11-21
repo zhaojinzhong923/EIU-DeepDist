@@ -168,9 +168,21 @@ void DeepDist::init(vector<int> &init_solution)
 
 
     // init goodvars stack
-    goodvar_stack_fill_pointer = 0;
+    // goodvar_stack_fill_pointer = 0;
+    // for (int v = 1; v <= num_vars; v++)
+    // {
+    //     if (score[v] > 0)
+    //     {
+    //         already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+    //         mypush(v, goodvar_stack);
+    //     }
+    //     else
+    //         already_in_goodvar_stack[v] = -1;
+    // }
+
     for (int v = 1; v <= num_vars; v++)
     {
+        // 综合得分>0
         if (score[v] > 0)
         {
             already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
@@ -178,7 +190,26 @@ void DeepDist::init(vector<int> &init_solution)
         }
         else
             already_in_goodvar_stack[v] = -1;
+
+        // 硬得分>0
+        if (hscore_ls[v] > 0)
+        {
+            already_in_good_hard_stack[v] = good_hardvar_stack_fill_pointer;
+            mypush(v, good_hardvar_stack);
+        }
+        else
+            already_in_good_hard_stack[v] = -1;
+
+        // 软得分>0
+        if (sscore_ls[v] > 0)
+        {
+            already_in_good_soft_stack[v] = good_softvar_stack_fill_pointer;
+            mypush(v, good_softvar_stack);
+        }
+        else
+            already_in_good_soft_stack[v] = -1;
     }
+}
 }
 
 int DeepDist::pick_var()
@@ -355,11 +386,13 @@ void DeepDist::hard_increase_weights(){
         for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
         {
             score[v] += h_inc;
+            hscore_ls[v] += h_inc;
             if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
             {
                 already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
                 mypush(v, goodvar_stack);
             }
+            update_good_hardvarstack(v);
         }
     }
     return;
@@ -382,17 +415,20 @@ void DeepDist::soft_increase_weights(){
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
                 {
                     score[v] += inc;
+                    sscore_ls[v] += inc;
                     if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
                     {
                         already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
                         mypush(v, goodvar_stack);
                     }
+                    update_good_softvarstack(v);
                 }
             }
             else if (sat_count[c] < 2) // sat
             {
                 v = sat_var[c];
                 score[v] -= inc;
+                sscore_ls[v] -= inc;
                 if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
                 {
                     int index = already_in_goodvar_stack[v];
@@ -401,6 +437,7 @@ void DeepDist::soft_increase_weights(){
                     already_in_goodvar_stack[last_v] = index;
                     already_in_goodvar_stack[v] = -1;
                 }
+                update_good_softvarstack(v);
             }
         }
     }
@@ -419,17 +456,20 @@ void DeepDist::soft_increase_weights(){
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
                 {
                     score[v] += inc;
+                    sscore_ls[v] += inc;
                     if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
                     {
                         already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
                         mypush(v, goodvar_stack);
                     }
+                    update_good_softvarstack(v);
                 }
             }
             else if (sat_count[c] < 2) // sat
             {
                 v = sat_var[c];
                 score[v] -= inc;
+                sscore_ls[v] -= inc;
                 if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
                 {
                     int index = already_in_goodvar_stack[v];
@@ -438,6 +478,7 @@ void DeepDist::soft_increase_weights(){
                     already_in_goodvar_stack[last_v] = index;
                     already_in_goodvar_stack[v] = -1;
                 }
+                update_good_softvarstack(v);
             }
         }
     }

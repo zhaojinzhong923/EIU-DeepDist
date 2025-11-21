@@ -75,7 +75,43 @@ void DeepDist::update_goodvarstack2(int flipvar)
 	}
 }
 
-void DeepDist::flip(int flipvar)
+
+void DeepDist::update_good_hardvarstack(int v)
+{
+    if (hscore_ls[v] > 0 && already_in_good_hard_stack[v] == -1)
+    {
+        already_in_good_hard_stack[v] = good_hardvar_stack_fill_pointer;
+        mypush(v, good_hardvar_stack);
+    }
+    else if (hscore_ls[v] <= 0 && already_in_good_hard_stack[v] != -1)
+    {
+        int index = already_in_good_hard_stack[v];
+        int last_v = mypop(good_hardvar_stack);
+        good_hardvar_stack[index] = last_v;
+        already_in_good_hard_stack[last_v] = index;
+        already_in_good_hard_stack[v] = -1;
+    }
+}
+
+void DeepDist::update_good_softvarstack(int v)
+{
+    if (sscore_ls[v] > 0 && already_in_good_soft_stack[v] == -1)
+    {
+        already_in_good_soft_stack[v] = good_softvar_stack_fill_pointer;
+        mypush(v, good_softvar_stack);
+    }
+    else if (sscore_ls[v] <= 0 && already_in_good_soft_stack[v] != -1)
+    {
+        int index = already_in_good_soft_stack[v];
+        int last_v = mypop(good_softvar_stack);
+        good_softvar_stack[index] = last_v;
+        already_in_good_soft_stack[last_v] = index;
+        already_in_good_soft_stack[v] = -1;
+    }
+}
+
+
+void DeepDist::flip2(int flipvar)
 {
 	int i, v, c;
 	int index;
@@ -85,21 +121,33 @@ void DeepDist::flip(int flipvar)
 	//cout << "c org_flipvar_score: " <<org_flipvar_score << endl;
 	cur_soln[flipvar] = 1 - cur_soln[flipvar];
 
+	double org_flipvar_hscore = hscore_ls[flipvar];
+	double org_flipvar_sscore = sscore_ls[flipvar];
+
 	for (i = 0; i < var_lit_count[flipvar]; ++i)
 	{
 		c = var_lit[flipvar][i].clause_num;
 		clause_c = clause_lit[c];
+		bool is_hard = (org_clause_weight[c] == top_clause_weight);
 
 		if (cur_soln[flipvar] == var_lit[flipvar][i].sense)
 		{
 			++sat_count[c];
 			if (sat_count[c] == 2) //sat_count from 1 to 2
 			{
-				score[sat_var[c]] += clause_weight[c];
-				if (score[sat_var[c]] > 0 && -1 == already_in_goodvar_stack[sat_var[c]])
+				int v = sat_var[c];
+				score[v] += clause_weight[c];
+				if (is_hard){
+					hscore_ls[v] += clause_weight[c];
+					update_good_hardvarstack(v);
+				}else{
+					sscore_ls[v] += clause_weight[c];
+					update_good_softvarstack(v);
+				}
+				if (score[v] > 0 && -1 == already_in_goodvar_stack[sat_var[c]])
 				{
-					already_in_goodvar_stack[sat_var[c]] = goodvar_stack_fill_pointer;
-					mypush(sat_var[c], goodvar_stack);
+					already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+					mypush(v, goodvar_stack);
 				}
 			}
 			else if (sat_count[c] == 1) // sat_count from 0 to 1
@@ -115,6 +163,13 @@ void DeepDist::flip(int flipvar)
 						goodvar_stack[index] = last_v;
 						already_in_goodvar_stack[last_v] = index;
 						already_in_goodvar_stack[v] = -1;
+					}
+					if (is_hard){
+						hscore_ls[v] -= clause_weight[c];
+						update_good_hardvarstack(v);
+					}else{
+						sscore_ls[v] -= clause_weight[c];
+						update_good_softvarstack(v);
 					}
 				}
 				sat(c);
@@ -138,6 +193,13 @@ void DeepDist::flip(int flipvar)
 							already_in_goodvar_stack[last_v] = index;
 							already_in_goodvar_stack[v] = -1;
 						}
+						if (is_hard){
+							hscore_ls[v] -= clause_weight[c];
+							update_good_hardvarstack(v);
+						}else{
+							sscore_ls[v] -= clause_weight[c];
+							update_good_softvarstack(v);
+						}
 						sat_var[c] = v;
 						break;
 					}
@@ -152,6 +214,13 @@ void DeepDist::flip(int flipvar)
 					{
 						already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
 						mypush(v, goodvar_stack);
+					}
+					if (is_hard){
+						hscore_ls[v] += clause_weight[c];
+						update_good_hardvarstack(v);
+					}else{
+						sscore_ls[v] += clause_weight[c];
+						update_good_softvarstack(v);
 					}
 				}
 				unsat(c);
@@ -175,7 +244,115 @@ void DeepDist::flip(int flipvar)
 		already_in_goodvar_stack[flipvar] = -1;
 	}
 	//update_goodvarstack1(flipvar);
+
+	hscore_ls[flipvar] = -org_flipvar_hscore;
+	update_good_hardvarstack(flipvar);
+	sscore_ls[flipvar] = -org_flipvar_sscore;
+	update_good_softvarstack(flipvar);
 }
+
+
+// void DeepDist::flip(int flipvar)
+// {
+// 	int i, v, c;
+// 	int index;
+// 	lit *clause_c;
+
+// 	double org_flipvar_score = score[flipvar];
+// 	//cout << "c org_flipvar_score: " <<org_flipvar_score << endl;
+// 	cur_soln[flipvar] = 1 - cur_soln[flipvar];
+
+// 	for (i = 0; i < var_lit_count[flipvar]; ++i)
+// 	{
+// 		c = var_lit[flipvar][i].clause_num;
+// 		clause_c = clause_lit[c];
+
+// 		if (cur_soln[flipvar] == var_lit[flipvar][i].sense)
+// 		{
+// 			++sat_count[c];
+// 			if (sat_count[c] == 2) //sat_count from 1 to 2
+// 			{
+// 				score[sat_var[c]] += clause_weight[c];
+// 				if (score[sat_var[c]] > 0 && -1 == already_in_goodvar_stack[sat_var[c]])
+// 				{
+// 					already_in_goodvar_stack[sat_var[c]] = goodvar_stack_fill_pointer;
+// 					mypush(sat_var[c], goodvar_stack);
+// 				}
+// 			}
+// 			else if (sat_count[c] == 1) // sat_count from 0 to 1
+// 			{
+// 				sat_var[c] = flipvar; //record the only true lit's var
+// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+// 				{
+// 					score[v] -= clause_weight[c];
+// 					if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+// 					{
+// 						int index = already_in_goodvar_stack[v];
+// 						int last_v = mypop(goodvar_stack);
+// 						goodvar_stack[index] = last_v;
+// 						already_in_goodvar_stack[last_v] = index;
+// 						already_in_goodvar_stack[v] = -1;
+// 					}
+// 				}
+// 				sat(c);
+// 			}
+// 		}
+// 		else // cur_soln[flipvar] != cur_lit.sense
+// 		{
+// 			--sat_count[c];
+// 			if (sat_count[c] == 1) //sat_count from 2 to 1
+// 			{
+// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+// 				{
+// 					if (p->sense == cur_soln[v])
+// 					{
+// 						score[v] -= clause_weight[c];
+// 						if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+// 						{
+// 							int index = already_in_goodvar_stack[v];
+// 							int last_v = mypop(goodvar_stack);
+// 							goodvar_stack[index] = last_v;
+// 							already_in_goodvar_stack[last_v] = index;
+// 							already_in_goodvar_stack[v] = -1;
+// 						}
+// 						sat_var[c] = v;
+// 						break;
+// 					}
+// 				}
+// 			}
+// 			else if (sat_count[c] == 0) //sat_count from 1 to 0
+// 			{
+// 				for (lit *p = clause_c; (v = p->var_num) != 0; p++)
+// 				{
+// 					score[v] += clause_weight[c];
+// 					if (score[v] > 0 && -1 == already_in_goodvar_stack[v])
+// 					{
+// 						already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+// 						mypush(v, goodvar_stack);
+// 					}
+// 				}
+// 				unsat(c);
+// 			} //end else if
+// 		}	 //end else
+// 	}
+
+// 	//update information of flipvar
+// 	score[flipvar] = -org_flipvar_score;
+// 	if (score[flipvar] > 0 && already_in_goodvar_stack[flipvar] == -1)
+// 	{
+// 		already_in_goodvar_stack[flipvar] = goodvar_stack_fill_pointer;
+// 		mypush(flipvar, goodvar_stack);
+// 	}
+// 	else if (score[flipvar] <= 0 && already_in_goodvar_stack[flipvar] != -1)
+// 	{
+// 		int index = already_in_goodvar_stack[flipvar];
+// 		int last_v = mypop(goodvar_stack);
+// 		goodvar_stack[index] = last_v;
+// 		already_in_goodvar_stack[last_v] = index;
+// 		already_in_goodvar_stack[flipvar] = -1;
+// 	}
+// 	//update_goodvarstack1(flipvar);
+// }
 
 void DeepDist::print_best_solution()
 {

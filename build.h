@@ -450,6 +450,14 @@ void DeepDist::allocate_memory()
     goodvar_stack = new int[malloc_var_length];
     already_in_goodvar_stack = new int[malloc_var_length];
 
+    // 新增：硬得分 good 栈
+    good_hardvar_stack = new int[malloc_var_length];
+    already_in_good_hard_stack = new int[malloc_var_length];
+
+    // 新增：软得分 good 栈
+    good_softvar_stack = new int[malloc_var_length];
+    already_in_good_soft_stack = new int[malloc_var_length];
+
     cur_soln = new int[malloc_var_length];
     best_soln = new int[malloc_var_length];
     local_opt_soln = new int[malloc_var_length];
@@ -521,6 +529,15 @@ void DeepDist::free_memory()
     delete[] temp_lit;
 
     delete[] soft_clause_num_index;
+
+    delete[] hscore_ls;
+    delete[] sscore_ls;
+
+    delete[] good_hardvar_stack;
+    delete[] already_in_good_hard_stack;
+
+    delete[] good_softvar_stack;
+    delete[] already_in_good_soft_stack;
 }
 
 #endif

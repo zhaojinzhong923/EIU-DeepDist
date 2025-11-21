@@ -129,6 +129,17 @@ class DeepDist
 	int goodvar_stack_fill_pointer;
 	int *already_in_goodvar_stack;
 
+	// 新增：硬得分>0的变量栈
+    int *good_hardvar_stack;
+    int good_hardvar_stack_fill_pointer;
+    int *already_in_good_hard_stack;
+
+    // 新增：软得分>0的变量栈
+    int *good_softvar_stack;
+    int good_softvar_stack_fill_pointer;
+    int *already_in_good_soft_stack;
+
+	
 	/* Information about solution */
 	int *cur_soln; //the current solution, with 1's for True variables, and 0's for False variables
 	int *best_soln;
