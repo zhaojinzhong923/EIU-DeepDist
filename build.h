@@ -425,6 +425,8 @@ void DeepDist::allocate_memory()
     time_stamp = new long long[malloc_var_length];
     neighbor_flag = new int[malloc_var_length];
     temp_neighbor = new int[malloc_var_length];
+    hscore_ls = new double[malloc_var_length];
+    sscore_ls = new double[malloc_var_length];
 
     org_clause_weight = new long long[malloc_clause_length];
     clause_weight = new double[malloc_clause_length];
