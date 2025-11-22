@@ -252,7 +252,7 @@ int DeepDist::pick_var()
         }
         else
         {
-            if(state_of_search == 1 && num_hclauses > 0){ // 仅优化软目标阶段
+            if(state_of_search == 1 && num_hclauses > 0 && tries > 10){ // 仅优化软目标阶段
                 best_var = goodvar_stack[rand() % goodvar_stack_fill_pointer];
 
                 for (i = 1; i < hd_count_threshold; ++i)
