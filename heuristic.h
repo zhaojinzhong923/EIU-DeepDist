@@ -214,6 +214,8 @@ void DeepDist::init(vector<int> &init_solution)
 
 }
 
+
+
 int DeepDist::pick_var()
 {
     int i, v;
@@ -250,24 +252,45 @@ int DeepDist::pick_var()
         }
         else
         {
-            best_var = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+            if(state_of_search == 1 && num_hclauses > 0){ // 仅优化软目标阶段
+                best_var = goodvar_stack[rand() % goodvar_stack_fill_pointer];
 
-            for (i = 1; i < hd_count_threshold; ++i)
-            {
-                v = goodvar_stack[rand() % goodvar_stack_fill_pointer];
-                if (score[v] > score[best_var])
+                for (i = 1; i < hd_count_threshold; ++i)
                 {
-                    best_var = v;
-                }
-                else if (score[v] == score[best_var])
-                {
-                    if (time_stamp[v] < time_stamp[best_var])
+                    v = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+                    if (sscore_ls[v] > sscore_ls[best_var])
                     {
                         best_var = v;
                     }
+                    else if (sscore_ls[v] == sscore_ls[best_var])
+                    {
+                        if (time_stamp[v] < time_stamp[best_var])
+                        {
+                            best_var = v;
+                        }
+                    }
                 }
-            }
-            return best_var; // best_array[rand() % best_array_count];
+                return best_var; // best_array[rand() % best_array_count];
+            }else{
+                best_var = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+
+                for (i = 1; i < hd_count_threshold; ++i)
+                {
+                    v = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+                    if (score[v] > score[best_var])
+                    {
+                        best_var = v;
+                    }
+                    else if (score[v] == score[best_var])
+                    {
+                        if (time_stamp[v] < time_stamp[best_var])
+                        {
+                            best_var = v;
+                        }
+                    }
+                }
+                return best_var; // best_array[rand() % best_array_count];
+                }
         }
     }
 
@@ -304,6 +327,99 @@ int DeepDist::pick_var()
     return best_var;
 }
 
+
+
+
+// int DeepDist::pick_var()
+// {
+//     int i, v;
+//     int best_var;
+//     int sel_c;
+//     lit *p;
+
+//     if (goodvar_stack_fill_pointer > 0)
+//     {
+//         int best_array_count = 0;
+//         if ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < rdprob)
+//             return goodvar_stack[rand() % goodvar_stack_fill_pointer];
+
+//         if (goodvar_stack_fill_pointer < hd_count_threshold)
+//         {
+//             best_var = goodvar_stack[0];
+
+//             for (i = 1; i < goodvar_stack_fill_pointer; ++i)
+//             {
+//                 v = goodvar_stack[i];
+//                 if (score[v] > score[best_var])
+//                 {
+//                     best_var = v;
+//                 }
+//                 else if (score[v] == score[best_var])
+//                 {
+//                     if (time_stamp[v] < time_stamp[best_var])
+//                     {
+//                         best_var = v;
+//                     }
+//                 }
+//             }
+//             return best_var; // best_array[rand() % best_array_count];
+//         }
+//         else
+//         {
+//             best_var = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+
+//             for (i = 1; i < hd_count_threshold; ++i)
+//             {
+//                 v = goodvar_stack[rand() % goodvar_stack_fill_pointer];
+//                 if (score[v] > score[best_var])
+//                 {
+//                     best_var = v;
+//                 }
+//                 else if (score[v] == score[best_var])
+//                 {
+//                     if (time_stamp[v] < time_stamp[best_var])
+//                     {
+//                         best_var = v;
+//                     }
+//                 }
+//             }
+//             return best_var; // best_array[rand() % best_array_count];
+//         }
+//     }
+
+//     update_clause_weights();
+
+//     if (hardunsat_stack_fill_pointer > 0)
+//     {
+//         sel_c = hardunsat_stack[rand() % hardunsat_stack_fill_pointer];
+//     }
+//     else
+//     {
+//         while(1){
+//             sel_c = softunsat_stack[rand() % softunsat_stack_fill_pointer];
+//             if (clause_lit_count[sel_c] != 0)
+//                 break;
+//         }
+//     }
+//     if ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < rwprob)
+//         return clause_lit[sel_c][rand() % clause_lit_count[sel_c]].var_num;
+
+//     best_var = clause_lit[sel_c][0].var_num;
+//     p = clause_lit[sel_c];
+//     for (p++; (v = p->var_num) != 0; p++)
+//     {
+//         if (score[v] > score[best_var])
+//             best_var = v;
+//         else if (score[v] == score[best_var])
+//         {
+//             if (time_stamp[v] < time_stamp[best_var])
+//                 best_var = v;
+//         }
+//     }
+
+//     return best_var;
+// }
+
 void DeepDist::local_search_with_decimation(char *inputfile)
 {
     Decimation deci(var_lit, var_lit_count, clause_lit, org_clause_weight, top_clause_weight);
@@ -323,6 +439,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
 
         long long local_opt = __LONG_LONG_MAX__;
         max_flips = max_non_improve_flip;
+        state_of_search = 0;
         for (step = 1; step < max_flips; ++step)
         {
             if (hard_unsat_nb == 0)
@@ -335,6 +452,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                 }
                 if (soft_unsat_weight < opt_unsat_weight)
                 {
+                    state_of_search = 1; // find a better solution
                     opt_time = get_runtime();
                     //cout << "o " << soft_unsat_weight << " " << total_step << " " << tries << " " << opt_time << endl;
                     cout << "o " << soft_unsat_weight << endl;
