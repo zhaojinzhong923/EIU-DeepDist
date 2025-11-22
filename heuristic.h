@@ -3,6 +3,8 @@
 
 #include "basis_pms.h"
 #include "deci.h"
+#include <iostream>
+#include <cmath>
 
 void DeepDist::init(vector<int> &init_solution)
 {
@@ -347,9 +349,10 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
-
-            clause_weight[c] += inc;
+            // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            double inc =  log((clause_weight[c] + tuned_org_clause_weight[c]))/log(avg_soft_weight) - log(clause_weight[c])/log(avg_soft_weight);
+            clause_weight[c] = clause_weight[c] + tuned_org_clause_weight[c];
+            // clause_weight[c] += inc;
             if (sat_count[c] <= 0) // unsat
             {
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
@@ -383,9 +386,11 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+            double inc =  log((clause_weight[c] + s_inc))/log(avg_soft_weight) - log(clause_weight[c])/log(avg_soft_weight);
 
-            clause_weight[c] += inc;
+            // clause_weight[c] += inc;
+            clause_weight[c] = clause_weight[c] + s_inc;
 
             if (sat_count[c] <= 0) // unsat
             {
