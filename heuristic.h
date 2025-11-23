@@ -3,6 +3,7 @@
 
 #include "basis_pms.h"
 #include "deci.h"
+#include <cmath>
 
 void DeepDist::init(vector<int> &init_solution)
 {
@@ -347,9 +348,13 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            
 
-            clause_weight[c] += inc;
+            // clause_weight[c] += inc;
+
+            double inc = pow(tuned_org_clause_weight[c],tries) - pow(tuned_org_clause_weight[c],tries-1);
+
             if (sat_count[c] <= 0) // unsat
             {
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
