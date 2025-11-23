@@ -355,10 +355,10 @@ void DeepDist::soft_increase_weights(){
             // clause_weight[c] += inc;
 
             if(state_of_search == 1){
-                double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
-                clause_weight[c] += inc;
-            }else if(state_of_search == 2){
                 double inc = tuned_org_clause_weight[c];
+                clause_weight[c] += inc;
+            }else if(soft_unsat_weight >= opt_unsat_weight && state_of_search == 2){
+                double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
                 clause_weight[c] += inc;
             }
 
@@ -542,7 +542,7 @@ void DeepDist::update_clause_weights()
         }
         else
         {
-            if (soft_unsat_weight >= opt_unsat_weight && best_soln_feasible != 0)
+            if ( best_soln_feasible != 0 && 0 == hard_unsat_nb)
             { 
                 soft_increase_weights();                
             }  
