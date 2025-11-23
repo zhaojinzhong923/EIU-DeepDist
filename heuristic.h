@@ -263,11 +263,13 @@ void DeepDist::local_search_with_decimation(char *inputfile)
 
         long long local_opt = __LONG_LONG_MAX__;
         max_flips = max_non_improve_flip;
+        state_of_search = 0; // searching for feasible solution
         for (step = 1; step < max_flips; ++step)
         {
             if (hard_unsat_nb == 0)
             {
                 local_soln_feasible = 1;
+                state_of_search = 1;
                 if (local_opt > soft_unsat_weight)
                 {
                     local_opt = soft_unsat_weight;
@@ -275,6 +277,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                 }
                 if (soft_unsat_weight < opt_unsat_weight)
                 {
+                    state_of_search = 2; // have found a better optimal solution
                     opt_time = get_runtime();
                     //cout << "o " << soft_unsat_weight << " " << total_step << " " << tries << " " << opt_time << endl;
                     cout << "o " << soft_unsat_weight << endl;
@@ -347,9 +350,18 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
 
-            clause_weight[c] += inc;
+            // clause_weight[c] += inc;
+
+            if(state_of_search == 1){
+                double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+                clause_weight[c] += inc;
+            }else if(state_of_search == 2){
+                double inc = tuned_org_clause_weight[c];
+                clause_weight[c] += inc;
+            }
+
             if (sat_count[c] <= 0) // unsat
             {
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
@@ -383,9 +395,17 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
 
-            clause_weight[c] += inc;
+            // clause_weight[c] += inc;
+
+            if(state_of_search == 1){
+                double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+                clause_weight[c] += inc;
+            }else if(state_of_search == 2){
+                double inc = s_inc;
+                clause_weight[c] += inc;
+            }
 
             if (sat_count[c] <= 0) // unsat
             {

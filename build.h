@@ -105,6 +105,7 @@ void DeepDist::settings()
     max_non_improve_flip = 10000000;
     large_clause_count_threshold = 0;
     soft_large_clause_count_threshold = 0;
+    state_of_search = 0; // 0: searching for feasible solution; 1: searching for better optimal solution; 2: haven found a better optimal solution
 
     if (1 == problem_weighted) // Weighted Partial MaxSAT
     {
