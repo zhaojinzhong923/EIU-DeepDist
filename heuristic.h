@@ -26,9 +26,9 @@ void DeepDist::init(vector<int> &init_solution)
                 else
                 {
                     if (org_clause_weight[c] == top_clause_weight)
-                        clause_weight[c] = 1;
+                        clause_weight[c] = feasible_times<10? 1 - 0.1 * (double)feasible_times : 0;
                     else 
-                        clause_weight[c] = tuned_org_clause_weight[c];
+                        clause_weight[c] = feasible_times<10? 0.1 * (double)feasible_times * tuned_org_clause_weight[c] : tuned_org_clause_weight[c];
                 }              
             }
             else
@@ -61,9 +61,9 @@ void DeepDist::init(vector<int> &init_solution)
                 else
                 {
                     if (org_clause_weight[c] == top_clause_weight)
-                        clause_weight[c] = 0;
+                        clause_weight[c] = feasible_times<10? 1 - 0.1 * (double)feasible_times : 0;
                     else
-                        clause_weight[c] = 1;
+                        clause_weight[c] = clause_weight[c] = feasible_times<10? 0.1 * (double)feasible_times  : 1;
                 }       
             }
             else
@@ -263,10 +263,12 @@ void DeepDist::local_search_with_decimation(char *inputfile)
 
         long long local_opt = __LONG_LONG_MAX__;
         max_flips = max_non_improve_flip;
+        feasible_times = 0;
         for (step = 1; step < max_flips; ++step)
         {
             if (hard_unsat_nb == 0)
             {
+                feasible_times++;
                 local_soln_feasible = 1;
                 if (local_opt > soft_unsat_weight)
                 {
