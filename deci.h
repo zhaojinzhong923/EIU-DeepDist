@@ -25,6 +25,8 @@ class Decimation
     void hard_random_propagation();
     void remove_assigned_hard_clause(int c);
 
+    void unit_prosess2();
+
     vector<int> fix;
 
     int num_vars;
@@ -495,6 +497,25 @@ void Decimation::unit_prosess()
         {
             sunit_propagation();
         } 
+        else                                               
+        {
+            random_propagation();
+        }
+    }
+}
+
+void Decimation::unit_prosess2()
+{
+
+    while (unassigned_var_count > 0)
+    {
+        if (sunit_beg_pointer != sunit_end_pointer)   
+        {
+            sunit_propagation();
+        }else if (hunit_beg_pointer != hunit_end_pointer)        
+        {
+            hunit_propagation();
+        }
         else                                               
         {
             random_propagation();

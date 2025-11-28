@@ -254,10 +254,23 @@ void DeepDist::local_search_with_decimation(char *inputfile)
     {
         deci.init(local_opt_soln, best_soln, unit_clause, unit_clause_count, clause_lit_count);
         
-        if (1 == problem_weighted)  // weighted partial MaxSAT
-            deci.unit_prosess();
-        else
-            deci.hard_unit_prosess();
+        if (1 == problem_weighted){
+            if(have_better_solution){
+                have_better_solution = false;
+                deci.unit_prosess2();
+            }else{
+                deci.unit_prosess();
+            }
+            
+        }else{
+            if(have_better_solution){
+                have_better_solution = false;
+                deci.unit_prosess2();
+            }else{
+                deci.hard_unit_prosess();
+            }
+        }
+            
                 
         init(deci.fix);
 
@@ -279,17 +292,11 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                     //cout << "o " << soft_unsat_weight << " " << total_step << " " << tries << " " << opt_time << endl;
                     cout << "o " << soft_unsat_weight << endl;
                     opt_unsat_weight = soft_unsat_weight;
-                    for (int v = 1; v <= num_vars; ++v)
+                    for (int v = 1; v <= num_vars; ++v){
                         best_soln[v] = cur_soln[v];
-                    // if (opt_unsat_weight <= best_known || best_known == -1)
-                    // {
-                    //     cout << "c best solution found." << endl;
-                    //     if (opt_unsat_weight < best_known)
-                    //     {
-                    //         cout << "c a better solution " << opt_unsat_weight << endl;
-                    //     }
-                    //     return;
-                    // }
+                    }
+                    have_better_solution = true;
+
                 }
                 if (best_soln_feasible == 0)
                 {
