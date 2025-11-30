@@ -28,7 +28,7 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
                     else{
-                        if(tuned_org_clause_weight>1){
+                        if(tuned_org_clause_weight[c]>1){
                             clause_weight[c] = tuned_org_clause_weight[c];
                         }
                         else{
