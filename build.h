@@ -105,6 +105,8 @@ void DeepDist::settings()
     max_non_improve_flip = 10000000;
     large_clause_count_threshold = 0;
     soft_large_clause_count_threshold = 0;
+    avg_hard_length = total_hard_length / (num_hclauses + 1);
+    avg_soft_length = total_soft_length / (num_sclauses + 1);
 
     if (1 == problem_weighted) // Weighted Partial MaxSAT
     {

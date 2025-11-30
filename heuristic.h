@@ -27,8 +27,15 @@ void DeepDist::init(vector<int> &init_solution)
                 {
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
-                    else 
-                        clause_weight[c] = tuned_org_clause_weight[c];
+                    else{
+                        if(tuned_org_clause_weight>1){
+                            clause_weight[c] = tuned_org_clause_weight[c];
+                        }
+                        else{
+                            clause_weight[c] = 0;
+                        }
+                    } 
+                        // clause_weight[c] = tuned_org_clause_weight[c];
                 }              
             }
             else
@@ -63,7 +70,7 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 0;
                     else
-                        clause_weight[c] = 1;
+                        clause_weight[c] = clause_lit_count[c]/avg_soft_length;
                 }       
             }
             else
