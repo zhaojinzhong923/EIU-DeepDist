@@ -108,6 +108,8 @@ void DeepDist::init(vector<int> &init_solution)
     unsatvar_stack_fill_pointer = 0;
     large_weight_clauses_count = 0;
 
+    pre_soft_unsat_weight = 0;
+
     /* figure out sat_count, sat_var and init unsat_stack */
     for (int c = 0; c < num_clauses; ++c)
     {
@@ -224,6 +226,7 @@ int DeepDist::pick_var()
             if (clause_lit_count[sel_c] != 0)
                 break;
         }
+        pre_soft_unsat_weight = soft_unsat_weight;
     }
     if ((rand() % MY_RAND_MAX_INT) * BASIC_SCALE < rwprob)
         return clause_lit[sel_c][rand() % clause_lit_count[sel_c]].var_num;
@@ -347,7 +350,9 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]*(1 + (soft_unsat_weight-opt_unsat_weight)/(soft_unsat_weight+1))) - clause_weight[c];
+            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]
+                *(1 + (pre_soft_unsat_weight - soft_unsat_weight)/(pre_soft_unsat_weight - opt_unsat_weight + 1)))
+                 - clause_weight[c];
 
             clause_weight[c] += inc;
             if (sat_count[c] <= 0) // unsat
@@ -383,7 +388,7 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + s_inc*(1 + (soft_unsat_weight-opt_unsat_weight)/(soft_unsat_weight+1))) - clause_weight[c];
+            double inc = soft_increase_ratio * (clause_weight[c] + s_inc*(1 + (pre_soft_unsat_weight - soft_unsat_weight)/(pre_soft_unsat_weight - opt_unsat_weight + 1))) - clause_weight[c];
 
             clause_weight[c] += inc;
 
