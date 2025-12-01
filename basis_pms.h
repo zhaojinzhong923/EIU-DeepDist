@@ -169,7 +169,7 @@ class DeepDist
 	float random_prob;
 	int coe_soft_clause_weight;
 	//long long *soft_clause_weight_upper_bound;
-	int pre_soft_unsat_weight;
+	long long pre_soft_unsat_weight;
 
 	//function used in algorithm
 	void build_neighbor_relation();
