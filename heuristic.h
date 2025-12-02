@@ -350,8 +350,12 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
+            // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]
+            //     *(1 + (pre_soft_unsat_weight - soft_unsat_weight)/(pre_soft_unsat_weight - opt_unsat_weight + 1)))
+            //      - clause_weight[c];
+
             double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]
-                *(1 + (pre_soft_unsat_weight - soft_unsat_weight)/(pre_soft_unsat_weight - opt_unsat_weight + 1)))
+                *(1 + (pre_soft_unsat_weight - opt_unsat_weight)/(pre_soft_unsat_weight - soft_unsat_weight + 1)))
                  - clause_weight[c];
 
             clause_weight[c] += inc;
@@ -388,7 +392,9 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + s_inc*(1 + (pre_soft_unsat_weight - soft_unsat_weight)/(pre_soft_unsat_weight - opt_unsat_weight + 1))) - clause_weight[c];
+            double inc = soft_increase_ratio * (clause_weight[c] + s_inc
+                *(1 + (pre_soft_unsat_weight - opt_unsat_weight)/(pre_soft_unsat_weight - soft_unsat_weight + 1))) 
+                - clause_weight[c];
 
             clause_weight[c] += inc;
 
