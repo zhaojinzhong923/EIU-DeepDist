@@ -10,7 +10,7 @@ void DeepDist::init(vector<int> &init_solution)
 
     if ((0 == local_soln_feasible || 0 == best_soln_feasible))
     {
-        pre_local_feasible = 0
+        pre_local_feasible = 0;
     }
     else
     {
