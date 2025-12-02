@@ -66,6 +66,10 @@ class Decimation
     int *hard_unsat_clause;
     int *index_in_hard_unsat_clause;
     int hard_unsat_clause_count;
+
+    int *soft_unsat_clause;
+    int *index_in_soft_unsat_clause;
+    int soft_unsat_clause_count;
 };
 
 Decimation::Decimation(lit **ls_var_lit, int *ls_var_lit_count, lit **ls_clause_lit, long long *ls_org_clause_weight, long long ls_top_clause_weight)
@@ -110,6 +114,9 @@ void Decimation::make_space(int max_c, int max_v)
 
     hard_unsat_clause = new int[max_c];
     index_in_hard_unsat_clause = new int[max_c];
+
+    soft_unsat_clause = new int[max_c];
+    index_in_soft_unsat_clause = new int[max_c];
 }
 
 
@@ -137,6 +144,9 @@ void Decimation::free_memory()
 
     delete[] hard_unsat_clause;
     delete[] index_in_hard_unsat_clause;
+
+    delete[] soft_unsat_clause;
+    delete[] index_in_soft_unsat_clause;
 }
 
 
@@ -153,6 +163,7 @@ void Decimation::init(int *ls_local_opt, int *ls_global_opt, lit *ls_unit_clause
 
     unassigned_var_count = num_vars;
     hard_unsat_clause_count = 0;
+    soft_unsat_clause_count = 0;
 
     //data structure of the instance
     local_opt = ls_local_opt;
@@ -179,6 +190,10 @@ void Decimation::init(int *ls_local_opt, int *ls_global_opt, lit *ls_unit_clause
             hard_unsat_clause[hard_unsat_clause_count] = i;
             index_in_hard_unsat_clause[i] = hard_unsat_clause_count;
             ++hard_unsat_clause_count;
+        }else{
+            soft_unsat_clause[soft_unsat_clause_count] = i;
+            index_in_soft_unsat_clause[i] = soft_unsat_clause_count;
+            ++soft_unsat_clause_count;
         }
     }
 
@@ -436,10 +451,14 @@ void Decimation::sunit_propagation()
 
 void Decimation::random_propagation()
 {
-    int v, sense;
-    v = unassigned_var[rand() % unassigned_var_count]; 
-    sense = rand() % 2;                                   
-    assign(v, sense);
+    // int v, sense;
+    // v = unassigned_var[rand() % unassigned_var_count]; 
+    // sense = rand() % 2;                                   
+    // assign(v, sense);
+
+    int v, sense, c;
+    if(hard_unsat_clause_count > 0){
+        c = hard_unsat_clause[rand() % hard_unsat_clause_count];
 }
 
 
@@ -449,6 +468,14 @@ void Decimation::remove_assigned_hard_clause(int c)
     int index = index_in_hard_unsat_clause[c]; 
     hard_unsat_clause[index] = last_unsat_clause;
     index_in_hard_unsat_clause[last_unsat_clause] = index;
+}
+
+void Decimation::remove_assigned_soft_clause(int c)
+{
+    int last_unsat_clause = soft_unsat_clause[--soft_unsat_clause_count];  
+    int index = index_in_soft_unsat_clause[c]; 
+    soft_unsat_clause[index] = last_unsat_clause;
+    index_in_soft_unsat_clause[last_unsat_clause] = index;
 }
 
 
