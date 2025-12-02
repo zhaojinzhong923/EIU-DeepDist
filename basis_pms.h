@@ -138,6 +138,8 @@ class DeepDist
 	long long opt_unsat_weight;
 	long long local_opt_unsat_weight;
 
+	int local_opt_time;
+
 	//clause weighting
 	int *large_weight_clauses;
 	int large_weight_clauses_count;

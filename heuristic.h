@@ -213,6 +213,8 @@ int DeepDist::pick_var()
 
     update_clause_weights();
 
+    local_opt_time ++;
+
     if (hardunsat_stack_fill_pointer > 0)
     {
         sel_c = hardunsat_stack[rand() % hardunsat_stack_fill_pointer];
@@ -260,6 +262,8 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             deci.hard_unit_prosess();
                 
         init(deci.fix);
+
+        local_opt_time = 0;
 
         long long local_opt = __LONG_LONG_MAX__;
         max_flips = max_non_improve_flip;
