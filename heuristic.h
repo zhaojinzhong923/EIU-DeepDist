@@ -8,6 +8,15 @@ void DeepDist::init(vector<int> &init_solution)
 {
     soft_large_weight_clauses_count = 0;
 
+    if ((0 == local_soln_feasible || 0 == best_soln_feasible))
+    {
+        pre_local_feasible = 0
+    }
+    else
+    {
+        pre_local_feasible = 1;
+    }
+
     if (1 == problem_weighted) // weighted partial MaxSAT
     {
         for (int c = 0; c < num_clauses; c++)
@@ -351,7 +360,9 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
+            double inc = pow(soft_increase_ratio,local_opt_time + 1) * (tuned_org_clause_weight[c] + pre_local_feasible * tuned_org_clause_weight[c]) 
+                       - pow(soft_increase_ratio,local_opt_time) * (tuned_org_clause_weight[c] + pre_local_feasible * tuned_org_clause_weight[c]);
 
             clause_weight[c] += inc;
             if (sat_count[c] <= 0) // unsat
@@ -387,7 +398,10 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+            // double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+
+            double inc = pow(soft_increase_ratio,local_opt_time + 1) * (1 + pre_local_feasible * s_inc) 
+                       - pow(soft_increase_ratio,local_opt_time) * (1 + pre_local_feasible * s_inc);
 
             clause_weight[c] += inc;
 

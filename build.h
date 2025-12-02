@@ -107,6 +107,7 @@ void DeepDist::settings()
     soft_large_clause_count_threshold = 0;
 
     local_opt_time = 0;
+    pre_local_feasible = 0;
 
     if (1 == problem_weighted) // Weighted Partial MaxSAT
     {

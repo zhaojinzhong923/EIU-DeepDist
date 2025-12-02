@@ -93,6 +93,10 @@ class DeepDist
 	int *sat_count;
 	int *sat_var;
 
+	double init_soft_clause_weight;
+
+	int pre_local_feasible;
+
 	int *soft_clause_num_index;
 	double avg_soft_weight;
 	double max_soft_clause_weight;
