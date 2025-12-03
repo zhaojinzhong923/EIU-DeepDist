@@ -370,6 +370,8 @@ void DeepDist::soft_increase_weights(){
 
             clause_weight[c] = tuned_org_clause_weight[c] * (pow(soft_increase_ratio,local_opt_time)*pre_local_feasible + soft_increase_ratio*(pow(soft_increase_ratio,local_opt_time) -1)/(soft_increase_ratio -1));
             double inc = clause_weight[c] - temp;
+            
+            if (sat_count[c] <= 0) // unsat
             {
                 for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
                 {
