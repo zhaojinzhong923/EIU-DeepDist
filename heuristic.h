@@ -409,7 +409,7 @@ void DeepDist::soft_increase_weights(){
 
             double C = s_inc * soft_increase_ratio / (soft_increase_ratio - 1);
 
-            clause_weight[c] = y * ( pre_local_feasible + C) - C
+            clause_weight[c] = y * (1 - pre_local_feasible + C) - C
 
             double inc = clause_weight[c] - temp;
 
