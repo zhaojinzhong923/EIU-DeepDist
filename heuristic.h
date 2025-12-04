@@ -357,7 +357,7 @@ void DeepDist::soft_increase_weights(){
     int i, c, v;
 
     double y = pow(soft_increase_ratio,local_opt_time + 1);
-    cout<<local_opt_time<<" "<<y<<"    ";
+    cout<<"local_opt_time "<<local_opt_time<<" "<<y<<"    ";
 
     if (1 == problem_weighted)
     {
