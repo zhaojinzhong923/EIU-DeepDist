@@ -272,7 +272,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                 
         init(deci.fix);
 
-        local_opt_time = 1;
+        local_opt_time = 0;
 
         long long local_opt = __LONG_LONG_MAX__;
         max_flips = max_non_improve_flip;
@@ -354,6 +354,8 @@ void DeepDist::hard_increase_weights(){
 void DeepDist::soft_increase_weights(){
     int i, c, v;
 
+    double y = pow(soft_increase_ratio,local_opt_time + 1);
+
     if (1 == problem_weighted)
     {
         for (i = 0; i < num_sclauses; ++i)
@@ -361,15 +363,14 @@ void DeepDist::soft_increase_weights(){
             c = soft_clause_num_index[i];
 
             // double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
-            // double inc = pow(soft_increase_ratio,local_opt_time + 1) * (tuned_org_clause_weight[c] + pre_local_feasible * tuned_org_clause_weight[c]) 
-            //            - pow(soft_increase_ratio,local_opt_time) * (tuned_org_clause_weight[c] + pre_local_feasible * tuned_org_clause_weight[c]);
-
-            // clause_weight[c] += inc;
-
             double temp = clause_weight[c];
 
-            clause_weight[c] = tuned_org_clause_weight[c] * (pow(soft_increase_ratio,local_opt_time)*pre_local_feasible + soft_increase_ratio*(pow(soft_increase_ratio,local_opt_time) -1)/(soft_increase_ratio -1));
+            double C = tuned_org_clause_weight[c] * soft_increase_ratio / (soft_increase_ratio - 1);
+
+            clause_weight[c] = y * (tuned_org_clause_weight[c] * pre_local_feasible + C) - C
+
             double inc = clause_weight[c] - temp;
+
             
             if (sat_count[c] <= 0) // unsat
             {
@@ -404,14 +405,11 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
 
-            // double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+            double temp = clause_weight[c];
 
-            // double inc = pow(soft_increase_ratio,local_opt_time + 1) * (1 + pre_local_feasible * s_inc) 
-            //            - pow(soft_increase_ratio,local_opt_time) * (1 + pre_local_feasible * s_inc);
+            double C = s_inc * soft_increase_ratio / (soft_increase_ratio - 1);
 
-            int temp = clause_weight[c];
-
-            clause_weight[c] = s_inc * (pow(soft_increase_ratio,local_opt_time)*pre_local_feasible + soft_increase_ratio*(pow(soft_increase_ratio,local_opt_time) -1)/(soft_increase_ratio -1));
+            clause_weight[c] = y * ( pre_local_feasible + C) - C
 
             double inc = clause_weight[c] - temp;
 
