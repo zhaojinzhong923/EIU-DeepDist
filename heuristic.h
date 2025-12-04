@@ -278,6 +278,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         max_flips = max_non_improve_flip;
         for (step = 1; step < max_flips; ++step)
         {
+            cout<<"tries: "<<tries<<endl;
             if (hard_unsat_nb == 0)
             {
                 local_soln_feasible = 1;
@@ -324,6 +325,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             time_stamp[flipvar] = step;
             total_step++;
         }
+        cout<<"-------------------------"<<endl;
     }
 }
 
@@ -355,6 +357,7 @@ void DeepDist::soft_increase_weights(){
     int i, c, v;
 
     double y = pow(soft_increase_ratio,local_opt_time + 1);
+    cout<<local_opt_time<<" "<<y<<"    ";
 
     if (1 == problem_weighted)
     {
