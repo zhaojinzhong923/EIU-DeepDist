@@ -435,6 +435,113 @@ void DeepDist::soft_increase_weights(){
     return;
 }
 
+void DeepDist::soft_increase_weights2(){
+    int i, c, v;
+
+    if (1 == problem_weighted)
+    {
+        for (i = 0; i < num_sclauses; ++i)
+        {
+            c = soft_clause_num_index[i];
+
+            double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]/avg_soft_weight) - clause_weight[c];
+
+            clause_weight[c] += inc;
+            if (sat_count[c] <= 0) // unsat
+            {
+                for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+                {
+                    score[v] += inc;
+                    if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+                    {
+                        already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+                        mypush(v, goodvar_stack);
+                    }
+                }
+            }
+            else if (sat_count[c] < 2) // sat
+            {
+                v = sat_var[c];
+                score[v] -= inc;
+                if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+                {
+                    int index = already_in_goodvar_stack[v];
+                    int last_v = mypop(goodvar_stack);
+                    goodvar_stack[index] = last_v;
+                    already_in_goodvar_stack[last_v] = index;
+                    already_in_goodvar_stack[v] = -1;
+                }
+            }
+        }
+    }
+    else
+    {
+        for (i = 0; i < num_sclauses; ++i)
+        {
+            c = soft_clause_num_index[i];
+
+            double inc = soft_increase_ratio * (clause_weight[c] + s_inc) - clause_weight[c];
+
+            clause_weight[c] += inc;
+
+            if (sat_count[c] <= 0) // unsat
+            {
+                for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+                {
+                    score[v] += inc;
+                    if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+                    {
+                        already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+                        mypush(v, goodvar_stack);
+                    }
+                }
+            }
+            else if (sat_count[c] < 2) // sat
+            {
+                v = sat_var[c];
+                score[v] -= inc;
+                if (score[v] <= 0 && -1 != already_in_goodvar_stack[v])
+                {
+                    int index = already_in_goodvar_stack[v];
+                    int last_v = mypop(goodvar_stack);
+                    goodvar_stack[index] = last_v;
+                    already_in_goodvar_stack[last_v] = index;
+                    already_in_goodvar_stack[v] = -1;
+                }
+            }
+        }
+    }
+    return;
+}
+
+
+
+void DeepDist::hard_decrease_weights(){
+    int i, c, v;
+    for (i = 0; i < num_sclauses; ++i)
+    {
+        c = hard_clause_num_index[i];
+        
+        clause_weight[c] += -1;
+
+        if (clause_weight[c] == (h_inc + 1))
+            large_weight_clauses[large_weight_clauses_count++] = c;
+
+        for (lit *p = clause_lit[c]; (v = p->var_num) != 0; p++)
+        {
+            score[v] += -1;
+            if (score[v] > 0 && already_in_goodvar_stack[v] == -1)
+            {
+                already_in_goodvar_stack[v] = goodvar_stack_fill_pointer;
+                mypush(v, goodvar_stack);
+            }
+        }
+    }
+    return;
+}
+
+
+
 void DeepDist::soft_smooth_weights()
 {
     int i, clause, v;
@@ -535,7 +642,16 @@ void DeepDist::update_clause_weights()
         {
             if (0 == hard_unsat_nb)
             {
-                soft_increase_weights();   
+                // soft_increase_weights();
+                if(soft_unsat_weight >= opt_unsat_weight)
+                { 
+                    soft_increase_weights();                
+                }else{
+                    soft_increase_weights2();
+                    if(((rand() % MY_RAND_MAX_INT) * BASIC_SCALE) < 0.1){
+                        hard_decrease_weights();
+                    }
+                }
             }
         }
         else

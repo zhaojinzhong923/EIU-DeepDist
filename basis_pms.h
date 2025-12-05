@@ -97,6 +97,7 @@ class DeepDist
 	double avg_soft_weight;
 	double max_soft_clause_weight;
 	double soft_increase_ratio;		//delta
+	int *hard_clause_num_index;
 
 	// long long *clause_selected_count;
 	int *best_soft_clause;
@@ -189,6 +190,9 @@ class DeepDist
 	void update_goodvarstack2(int flipvar);
 	int pick_var();
 	void soft_increase_weights_not_partial();
+
+	void soft_increase_weights2();
+	void hard_decrease_weights();
 
   public:
 	DeepDist();
