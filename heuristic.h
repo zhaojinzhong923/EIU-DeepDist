@@ -222,7 +222,9 @@ int DeepDist::pick_var()
 
     update_clause_weights();
 
-    local_opt_time ++;
+    if(hard_unsat_nb == 0){
+        local_opt_time ++;
+    }
 
     if (hardunsat_stack_fill_pointer > 0)
     {
