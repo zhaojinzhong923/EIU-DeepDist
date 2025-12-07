@@ -653,7 +653,7 @@ void DeepDist::update_clause_weights()
                     not_opt_times++;
                                    
                 }else{
-                    soft_increase_weights2();
+                    soft_increase_weights();
                     if(((rand() % MY_RAND_MAX_INT) * BASIC_SCALE) < 0.1){
                         hard_decrease_weights();
                     } 
