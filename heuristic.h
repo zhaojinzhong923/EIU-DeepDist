@@ -28,12 +28,13 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
                     else{
-                        if(best_soln_feasible == 1){
-                            clause_weight[c] = tuned_org_clause_weight[c] * 0.1 * (double)feasible_times;
-                        }
-                        else{
-                            clause_weight[c] = 0;
-                        }
+                        // if(best_soln_feasible == 1){
+                        //     clause_weight[c] = tuned_org_clause_weight[c] * 0.1 * (double)feasible_times;
+                        // }
+                        // else{
+                        //     clause_weight[c] = 0;
+                        // }
+                        clause_weight[c] = 0;
                     }
                         // clause_weight[c] = 0;
                 }
@@ -70,12 +71,13 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
                     else{
-                        if(best_soln_feasible == 1){
-                            clause_weight[c] = 0.1 * (double)feasible_times;
-                        }
-                        else{
-                            clause_weight[c] = 0;
-                        }
+                        // if(best_soln_feasible == 1){
+                        //     clause_weight[c] = 0.1 * (double)feasible_times;
+                        // }
+                        // else{
+                        //     clause_weight[c] = 0;
+                        // }
+                        clause_weight[c] = 0;
                     }
                         // clause_weight[c] = 0;
                 }
@@ -286,6 +288,11 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         max_flips = max_non_improve_flip;
         for (step = 1; step < max_flips; ++step)
         {
+
+            if(not_opt_times >=3000 && get_runtime() < 200){
+                break;
+            }
+
             if (hard_unsat_nb == 0)
             {
                 local_soln_feasible = 1;
@@ -646,17 +653,17 @@ void DeepDist::update_clause_weights()
         {
             if (0 == hard_unsat_nb)
             {
-                // soft_increase_weights();
+                soft_increase_weights();
                 if(soft_unsat_weight > opt_unsat_weight)
                 { 
-                    soft_increase_weights();
+                    // soft_increase_weights();
                     not_opt_times++;
                                    
                 }else{
-                    soft_increase_weights2();
-                    if(((rand() % MY_RAND_MAX_INT) * BASIC_SCALE) < 0.1){
-                        hard_decrease_weights();
-                    } 
+                    // soft_increase_weights2();
+                    // if(((rand() % MY_RAND_MAX_INT) * BASIC_SCALE) < 0.1){
+                    //     hard_decrease_weights();
+                    // } 
                     opt_times++;
                 }
             }
