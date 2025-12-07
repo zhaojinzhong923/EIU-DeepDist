@@ -29,8 +29,13 @@ void DeepDist::init(vector<int> &init_solution)
                 {
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
-                    else
-                        clause_weight[c] = 0;
+                    else{
+                        // clause_weight[c] = 0;
+                        if(tries % 4 == 0 && best_soln_feasible == 1)
+                            clause_weight[c] = 1 / tuned_org_clause_weight[c];
+                        else
+                            clause_weight[c] = 0;
+                    }
                 }
                 else
                 {
@@ -359,7 +364,7 @@ void DeepDist::soft_increase_weights(){
     int i, c, v;
 
     double y = pow(soft_increase_ratio,local_opt_time + 1);
-    cout<<"local_opt_time "<<local_opt_time<<" y: "<<y<<"    ";
+    // cout<<"local_opt_time "<<local_opt_time<<" y: "<<y<<"    ";
 
     if (1 == problem_weighted)
     {
