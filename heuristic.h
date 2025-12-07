@@ -23,11 +23,11 @@ void DeepDist::init(vector<int> &init_solution)
                 if ((0 == local_soln_feasible || 0 == best_soln_feasible))
                 {
                     if (org_clause_weight[c] == top_clause_weight){
-                        // clause_weight[c] = 1;
-                        clause_weight[c] = feasible_times/(tries-first_feasible+1);
+                        clause_weight[c] = 1;
+                        // clause_weight[c] = feasible_times/(tries-first_feasible+1);
                     }else{
                         if(best_soln_feasible == 1){
-                            clause_weight[c] = tuned_org_clause_weight[c] * (num_sclauses/num_clauses) * (double)feasible_times;
+                            clause_weight[c] = tuned_org_clause_weight[c] * 0.1 * (double)feasible_times;
                         }
                         else{
                             clause_weight[c] = 0;
@@ -40,7 +40,7 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
                     else 
-                        clause_weight[c] = tuned_org_clause_weight[c];
+                        clause_weight[c] = tuned_org_clause_weight[c] * (double)feasible_times;
                 }              
             }
             else
@@ -69,7 +69,7 @@ void DeepDist::init(vector<int> &init_solution)
                         clause_weight[c] = 1;
                     else{
                         if(best_soln_feasible == 1){
-                            clause_weight[c] = num_sclauses/num_hclauses * (double)feasible_times;
+                            clause_weight[c] = 0.1 * (double)feasible_times;
                         }
                         else{
                             clause_weight[c] = 0;
@@ -82,7 +82,7 @@ void DeepDist::init(vector<int> &init_solution)
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 0;
                     else
-                        clause_weight[c] = 1;
+                        clause_weight[c] = 1 * (double)feasible_times;
                 }       
             }
             else
