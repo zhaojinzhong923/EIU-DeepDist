@@ -289,7 +289,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         for (step = 1; step < max_flips; ++step)
         {
 
-            if(not_opt_times >=3000 && get_runtime() < 200){
+            if(not_opt_times >=3000 && get_runtime() < 200 && opt_times != 0){
                 break;
             }
 
