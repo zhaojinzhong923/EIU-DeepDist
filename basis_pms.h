@@ -170,6 +170,9 @@ class DeepDist
 	int coe_soft_clause_weight;
 	//long long *soft_clause_weight_upper_bound;
 
+	int opt_times;
+	int not_opt_times;
+
 	//function used in algorithm
 	void build_neighbor_relation();
 	void allocate_memory();

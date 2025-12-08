@@ -8,6 +8,9 @@ void DeepDist::init(vector<int> &init_solution)
 {
     soft_large_weight_clauses_count = 0;
 
+    opt_times = 0;
+    not_opt_times = 0;
+
     if (1 == problem_weighted) // weighted partial MaxSAT
     {
         for (int c = 0; c < num_clauses; c++)
@@ -311,6 +314,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             time_stamp[flipvar] = step;
             total_step++;
         }
+        cout<<"tries: "<<tries<<", opt_times: "<<opt_times<<", not_opt_times: "<<not_opt_times<<endl;
     }
 }
 
@@ -517,7 +521,12 @@ void DeepDist::update_clause_weights()
         {
             if (0 == hard_unsat_nb)
             {
-                soft_increase_weights();   
+                soft_increase_weights();
+                if(soft_unsat_weight <= opt_unsat_weight){
+                    opt_times++;
+                } else {
+                    not_opt_times++;
+                }
             }
         }
         else
@@ -526,6 +535,12 @@ void DeepDist::update_clause_weights()
             { 
                 soft_increase_weights();                
             }  
+            if (soft_unsat_weight <= opt_unsat_weight && 0 == hard_unsat_nb)
+            { 
+                opt_times++;                
+            }else{
+                not_opt_times++;
+            }
         }  
     }
     else
