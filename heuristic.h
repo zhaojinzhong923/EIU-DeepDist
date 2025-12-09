@@ -269,6 +269,7 @@ int DeepDist::pick_var()
 
 void DeepDist::local_search_with_decimation(char *inputfile)
 {
+    int cutoff_times = 3000;
     Decimation deci(var_lit, var_lit_count, clause_lit, org_clause_weight, top_clause_weight);
     deci.make_space(num_clauses, num_vars);
     total_step = 0;
@@ -289,7 +290,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         for (step = 1; step < max_flips; ++step)
         {
 
-            if(not_opt_times >=3000 && get_runtime() < 200 && opt_times != 0){
+            if(not_opt_times >=cutoff_times && get_runtime() > 100 && opt_times == 0){
                 break;
             }
 
@@ -338,6 +339,12 @@ void DeepDist::local_search_with_decimation(char *inputfile)
             flip(flipvar);
             time_stamp[flipvar] = step;
             total_step++;
+        }
+
+        if(local_opt <= opt_unsat_weight){
+            if(cutoff_times >= not_opt_times + opt_times){
+                cutoff_times = not_opt_times + opt_times + 1;
+            }
         }
         cout<<"tries: "<<tries<<", opt_times: "<<opt_times<<", not_opt_times: "<<not_opt_times<<endl;
     }
