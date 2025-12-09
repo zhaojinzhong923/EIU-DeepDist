@@ -344,6 +344,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         if(local_opt <= opt_unsat_weight){
             if(cutoff_times <= not_opt_times + opt_times){
                 cutoff_times = not_opt_times + opt_times + 1;
+                cout<<"new cutoff_times: "<<cutoff_times<<endl;
             }
         }
         cout<<"local_opt :"<<local_opt<<", opt_unsat_weight: "<<opt_unsat_weight<<endl;
