@@ -27,8 +27,13 @@ void DeepDist::init(vector<int> &init_solution)
                 {
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 1;
-                    else 
-                        clause_weight[c] = tuned_org_clause_weight[c];
+                    else {
+                        if(exceed_soln == 1)
+                            clause_weight[c] = 1/tuned_org_clause_weight[c];
+                        else
+                            clause_weight[c] = tuned_org_clause_weight[c];
+                    }
+                        // clause_weight[c] = tuned_org_clause_weight[c];
                 }              
             }
             else
@@ -62,8 +67,13 @@ void DeepDist::init(vector<int> &init_solution)
                 {
                     if (org_clause_weight[c] == top_clause_weight)
                         clause_weight[c] = 0;
-                    else
-                        clause_weight[c] = 1;
+                    else{
+                        if(exceed_soln == 1)
+                            clause_weight[c] = num_hclauses/num_sclauses;
+                        else
+                            clause_weight[c] = 1;
+                    }
+                        // clause_weight[c] = 1;
                 }       
             }
             else
@@ -349,7 +359,9 @@ void DeepDist::soft_increase_weights(){
         for (i = 0; i < num_sclauses; ++i)
         {
             c = soft_clause_num_index[i];
-
+            if(clause_weight[c] == 1/tuned_org_clause_weight[c]){
+                clause_weight[c] = tuned_org_clause_weight[c];
+            }
             double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
 
             clause_weight[c] += inc;
