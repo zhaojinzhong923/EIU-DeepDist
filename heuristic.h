@@ -275,6 +275,9 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                 }
                 if (soft_unsat_weight < opt_unsat_weight)
                 {
+
+                    exceed_soln = 1;
+
                     opt_time = get_runtime();
                     //cout << "o " << soft_unsat_weight << " " << total_step << " " << tries << " " << opt_time << endl;
                     cout << "o " << soft_unsat_weight << endl;
