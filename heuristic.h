@@ -362,7 +362,7 @@ void DeepDist::soft_increase_weights(){
         {
             c = soft_clause_num_index[i];
             if(clause_weight[c] == 1/tuned_org_clause_weight[c]){
-                clause_weight[c] = 2*tuned_org_clause_weight[c];
+                clause_weight[c] = 3*tuned_org_clause_weight[c];
             }
             double inc = soft_increase_ratio * (clause_weight[c] + tuned_org_clause_weight[c]) - clause_weight[c];
 
