@@ -174,6 +174,7 @@ class DeepDist
 
 	int opt_times;
 	int not_opt_times;
+	int exceed_times;
 
 	//function used in algorithm
 	void build_neighbor_relation();

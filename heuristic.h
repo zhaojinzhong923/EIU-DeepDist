@@ -270,6 +270,7 @@ int DeepDist::pick_var()
 void DeepDist::local_search_with_decimation(char *inputfile)
 {
     int cutoff_times = 3000;
+    exceed_times =0;
     Decimation deci(var_lit, var_lit_count, clause_lit, org_clause_weight, top_clause_weight);
     deci.make_space(num_clauses, num_vars);
     total_step = 0;
@@ -290,6 +291,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
         for (step = 1; step < max_flips; ++step)
         {
 
+            cutoff_times = 3000 + exceed_times * 100;
             if(not_opt_times >=cutoff_times && get_runtime() > 100 && opt_times == 0){
                 break;
             }
@@ -304,6 +306,7 @@ void DeepDist::local_search_with_decimation(char *inputfile)
                 }
                 if (soft_unsat_weight < opt_unsat_weight)
                 {
+                    exceed_times++;
                     opt_time = get_runtime();
                     //cout << "o " << soft_unsat_weight << " " << total_step << " " << tries << " " << opt_time << endl;
                     cout << "o " << soft_unsat_weight << endl;
