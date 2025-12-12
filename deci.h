@@ -504,22 +504,66 @@ void Decimation::unit_prosess()
     }
 }
 
+// void Decimation::unit_prosess2()
+// {
+
+//     while (unassigned_var_count > 0)
+//     {
+//         if (sunit_beg_pointer != sunit_end_pointer)   
+//         {
+//             sunit_propagation();
+//         }else if (hunit_beg_pointer != hunit_end_pointer)        
+//         {
+//             hunit_propagation();
+//         }
+//         else                                               
+//         {
+//             random_propagation();
+//         }
+//     }
+// }
+
+
 void Decimation::unit_prosess2()
 {
-
+    int hard_unsat_clause_count, soft_unsat_clause_count;
     while (unassigned_var_count > 0)
     {
-        if (sunit_beg_pointer != sunit_end_pointer)   
-        {
-            sunit_propagation();
-        }else if (hunit_beg_pointer != hunit_end_pointer)        
+        // if (sunit_beg_pointer != sunit_end_pointer)   
+        // {
+        //     sunit_propagation();
+        // }else if (hunit_beg_pointer != hunit_end_pointer)        
+        // {
+        //     hunit_propagation();
+        // }
+        // else                                               
+        // {
+        //     random_propagation();
+        // }
+
+        hard_unsat_clause_count = hunit_end_pointer - hunit_beg_pointer;;
+        soft_unsat_clause_count = sunit_end_pointer - sunit_beg_pointer;
+        if(hard_unsat_clause_count >= soft_unsat_clause_count)
         {
             hunit_propagation();
+        }
+        else if(hard_unsat_clause_count < soft_unsat_clause_count)
+        {
+            sunit_propagation();
+        }
+        else if(hard_unsat_clause_count > 0)
+        {
+            hunit_propagation();
+        }else if(soft_unsat_clause_count > 0)
+        {
+            sunit_propagation();
         }
         else                                               
         {
             random_propagation();
         }
+
+
     }
 }
 
